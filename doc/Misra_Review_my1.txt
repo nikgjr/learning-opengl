@@ -1330,145 +1330,185 @@ Rule 19.1
 
 
 -----------------------------------------------------------------------------
-Rule-20.1
-#include directives should only be preceded by preprocessor directives or comments
+Rule-20.1	
+	#include directives should only be preceded by preprocessor directives or comments
+	
+	The rule shall be applied to the contents of a file before preprocessing occurs.
+	
+	#include 지시문 앞에 선행 지시문이나 주석이 있어야합니다. 
+	전처리가 일어나기 전에 규칙은 파일의 내용에 적용되어야한다.
+	사전 처리가 발생하기 전에 파일 내용에 규칙을 적용해야 한다.
+	
+	Rationale
+	To aid code readability, all the #include directives in a particular code file should be grouped together near the top of the file.
+	Additionally, using #include to include a standard header Þ le within a declaration or deÞ nition, or using part of The Standard Library before the inclusion of the related standard header Þ le leads to undefined behaviour.
+	
+	이론적 해석
+	코드 가독성을 높이려면 특정 코드 파일의 모든 #include 지시문을 파일의 맨 위에 함께 그룹화해야합니다.
+	또한 #include를 사용하여 선언 또는 정의 내에 표준 헤더 파일을 포함하거나 관련 표준 헤더 파일을 포함하기 전에 표준 라이브러리의 일부를 사용하면 정의되지 않은 동작이 발생합니다.
+	
+	Example Code:
+	
+	#include "misra.h"
+	#include "m3cmex.h"
+	
+	extern int16_t rule_2001( void )
+	{
+	   return 1;
+	}
+	
+	#include "rule-20.01.h"                         /* 5087 */
+	
+	
+	/* f.h */
+	xyz = 0;
+	/* f.c */
+	int16_t
+	#include "f.h" /* Non-compliant */
+	/* f1.c */
+	#define F1_MACRO
+	#include "f1.h" /* Compliant */
+	#include "f2.h" /* Compliant */
+	int32_t i = 0;
+	#include "f3.h" /* Non-compliant */
 
-Amplification:
-
-The rule shall be applied to the contents of a file before preprocessing occurs.
-
-Example Code:
-
-#include "misra.h"
-#include "m3cmex.h"
-
-extern int16_t rule_2001( void )
-{
-   return 1;
-}
-
-#include "rule-20.01.h"                         /* 5087 */
-
-
-Rationale
-To aid code readability, all the #include directives in a particular code Þ le should be grouped together
-near the top of the Þ le.
-Additionally, using #include to include a standard header Þ le within a declaration or deÞ nition, or using
-part of The Standard Library before the inclusion of the related standard header Þ le leads to undeÞ ned
-behaviour.
-Example
-/* f.h */
-xyz = 0;
-/* f.c */
-int16_t
-#include "f.h" /* Non-compliant */
-/* f1.c */
-#define F1_MACRO
-#include "f1.h" /* Compliant */
-#include "f2.h" /* Compliant */
-int32_t i = 0;
-#include "f3.h" /* Non-compliant */
 
 -----------------------------------------------------------------------------
-Rule-20.5
-#undef should not be used
+Rule-20.5	
+	#undef should not be used
+	
+	Example Code:
+	
+	#include "misra.h"
+	#include "m3cmex.h"
+	
+	extern int16_t rule_2005( void )
+	{
+	    return 1;
+	}
+	
+	#define  L      0
+	#undef   L                                      /* 0841 */
+	
+	
+	Rationale
+	The use of #unde f can make it unclear which macros exist at a particular point within a translation unit.
+	#unde f를 사용하면 번역 단위 내의 특정 지점에 어떤 매크로가 존재하는지 명확하지 않을 수 있습니다.
+	
+	Example
+	#define QUALIFIER volatile
+	#undef QUALIFIER /* Non-compliant */
+	void f ( QUALIFIER int32_t p )
+	{
+	while ( p != 0 )
+	{
+	; /* Wait... */
+	}
+	}
 
-Example Code:
-
-#include "misra.h"
-#include "m3cmex.h"
-
-extern int16_t rule_2005( void )
-{
-    return 1;
-}
-
-#define  L      0
-#undef   L                                      /* 0841 */
-
-
-Rationale
-The use of #unde f can make it unclear which macros exist at a particular point within a translation
-unit.
-Example
-#define QUALIFIER volatile
-#undef QUALIFIER /* Non-compliant */
-void f ( QUALIFIER int32_t p )
-{
-while ( p != 0 )
-{
-; /* Wait... */
-}
-}
 -----------------------------------------------------------------------------
-Rule-20.10
-The # and ## preprocessor operators should not be used
+Rule-20.10	
+	The # and ## preprocessor operators should not be used
+	
+	Rationale
+	The order of evaluation associated with multiple #, multiple ## or a mix of # and ## preprocessor operators is unspecified. 
+	In some cases it is therefore not possible to predict the result of macro expansion.
+	The use of the ## operator can result in code that is obscure.
+	Note: Rule 1.3 covers the undeÞ ned behaviour that arises if either:
+	 The result of a # operator is not a valid string literal; or
+	 The result of a ## operator is not a valid preprocessing token.
+	
+	이론적 해석
+	여러 #, 다중 ## 또는 # 및 ## 전 처리기 연산자 조합과 관련된 평가 순서는 지정되지 않습니다.
+	따라서 어떤 경우에는 매크로 확장 결과를 예측할 수 없습니다.
+	## 연산자를 사용하면 코드가 애매하게 나타날 수 있습니다.
+	주 : 규칙 1.3은 다음 중 하나 일 경우 발생하는 정의되지 않은 동작을 다룹니다.
+	# 연산자의 결과는 유효한 문자열 리터럴이 아닙니다. 또는
+	## 연산자의 결과는 유효한 전처리 토큰이 아닙니다.
+	
+	여러#, 다중##또는#및##preprocessor연산자 혼합과 관련된 평가 순서는 지정되지 않았습니다. 
+	따라서 매크로 확장의 결과를 예측할 수 없는 경우도 있습니다.
+	##연산자를 사용하면 코드가 모호할 수 있습니다.
+	참고:규칙 1.3은 다음 중 하나에 해당하는 경우에 발생하는 언더 헤드 동작을 다룹니다.
+	#연산자의 결과가 유효한 문자열 리터럴이 아닙니다. 또는
+	##연산자의 결과는 유효한 사전 처리 토큰이 아닙니다.
+	
+	
+	
+	xample Code:
+	
+	#include "misra.h"
+	#include "m3cmex.h"
+	
+	#define STRINGIFY( S ) #S                       /* 0341 */
+	#define GLUE( S1, S2 ) S1 ## S2                 /* 0342 */
+	
+	extern int16_t rule_2010( void )
+	{
+	   const char buf[] = STRINGIFY( MISRA );
+	   int16_t GLUE( ru, le ) = 1;
+	
+	   return 0;
+	}
 
-Example Code:
-
-#include "misra.h"
-#include "m3cmex.h"
-
-#define STRINGIFY( S ) #S                       /* 0341 */
-#define GLUE( S1, S2 ) S1 ## S2                 /* 0342 */
-
-extern int16_t rule_2010( void )
-{
-   const char buf[] = STRINGIFY( MISRA );
-   int16_t GLUE( ru, le ) = 1;
-
-   return 0;
-}
-
-Rationale
-The order of evaluation associated with multiple #, multiple ## or a mix of # and ## preprocessor
-operators is unspeciÞ ed. In some cases it is therefore not possible to predict the result of macro
-expansion.
-The use of the ## operator can result in code that is obscure.
-Note: Rule 1.3 covers the undeÞ ned behaviour that arises if either:
- The result of a # operator is not a valid string literal; or
- The result of a ## operator is not a valid preprocessing token.
 See also
 Rule 20.11
 
 -----------------------------------------------------------------------------
-Rule-21.12
-The exception handling features of <fenv.h> should not be used
-
-Amplification:
-
-The identifiers feclearexcept, fegetexceptflag, feraiseexcept, fesetexceptflag and fetestexcept shall not be used and no macro with one of these names shall be expanded.
-
-The macros FE_INEXACT, FE_DIVBYZERO, FE_UNDERFLOW, FE_OVERFLOW, FE_INVALID and FE_ALL_EXCEPT, along with any implementation-defined floating-point exception macros, shall not be used.
-
-Example Code:
-
-#include <fenv.h>
-
-#include "misra.h"
-#include "m3cmex.h"
-
-extern int16_t rule_2112( void )
-{
-   float32_t z;
-   s16a = feclearexcept( FE_DIVBYZERO );                /* 5136 */
-   z = f32a / f32b;
-   if ( fetestexcept( FE_DIVBYZERO ) != 0 )             /* 5136 */
-   {
-   }
-   else
-   {
-#pragma STDC FENV_ACCESS ON                             /* 3116 */
-       z = f32a * f32b;
-   }
-   if ( z > f32a )
-   {
-#pragma STDC FENV_ACCESS OFF                            /* 3116 */
-       if ( fetestexcept( FE_OVERFLOW ) != 0)           /* 5136 */
-       {
-       }
-   }
-
-   return 1;
-}
-
+Rule-21.12	
+	The exception handling features of <fenv.h> should not be used
+	
+	Amplification:
+	
+	The identifiers feclearexcept, fegetexceptflag, feraiseexcept, fesetexceptflag and fetestexcept shall not be used and no macro with one of these names shall be expanded.
+	
+	The macros FE_INEXACT, FE_DIVBYZERO, FE_UNDERFLOW, FE_OVERFLOW, FE_INVALID and FE_ALL_EXCEPT, along with any implementation-defined floating-point exception macros, shall not be used.
+	
+	<fenv.h>의 예외 처리 기능을 사용하면 안됩니다.
+	식별자 feclearexcept, fegetexceptflag, feraiseexcept, fesetexceptflag 및 fetestexcept는 사용되지 않아야하며이 이름 중 하나를 가진 매크로는 확장되지 않습니다.
+	
+	구현 정의 부동 소수점 예외 매크로와 함께 매크로 FE_INEXACT, FE_DIVBYZERO, FE_UNDERFLOW, FE_OVERFLOW, FE_INVALID 및 FE_ALL_EXCEPT는 사용하지 않아야합니다.
+	
+	Peclearexcept, Fegetexcept, Fesetexceptflag및 Fetestexcept식별자는 사용할 수 없으며 이러한 이름의 매크로는 사용할 수 없습니다.
+	
+	매크로 FE_INEXACT, FE_DIVBERO, FE_UNDErfLOW, FE_UNDEERFlOW, FE_INGILID및 FE_INCEPT예외는 사용되지 않습니다.
+	
+	Rationale
+	In some circumstances, the values of the floating-point status flags are unspecified and attempts to a ccess them may lead to undeÞ ned behaviour.
+	The order in which exceptions are raised by the feraiseexcept function is unspeciÞ ed and could therefore result in a program that has been designed for a certain order not operating correctly.
+	이론적 해석
+	경우에 따라 부동 소수점 상태 플래그의 값이 지정되지 않았으므로 부동 소수점 상태 플래그를 사용하려고하면 undevered 동작이 발생할 수 있습니다.
+	feraiseexcept 함수에 의해 예외가 발생하는 순서는 지정되지 않으므로 올바르게 작동하지 않는 특정 순서로 설계된 프로그램이 될 수 있습니다.
+	
+	일부 상황에서는 부동 소수 점 상태 플래그의 값이 지정되지 않으며, 이러한 플래그를 사용하려고 하면 ned가 부족하게 될 수 있습니다.
+	Feraiseexcept함수에 의해 예외가 발생하는 순서는 지정되지 않으므로 특정 주문에 대해 설계된 프로그램이 올바르게 작동하지 않을 수 있습니다.
+	Example Code:
+	
+	#include <fenv.h>
+	
+	#include "misra.h"
+	#include "m3cmex.h"
+	
+	extern int16_t rule_2112( void )
+	{
+	   float32_t z;
+	   s16a = feclearexcept( FE_DIVBYZERO );                /* 5136 */
+	   z = f32a / f32b;
+	   if ( fetestexcept( FE_DIVBYZERO ) != 0 )             /* 5136 */
+	   {
+	   }
+	   else
+	   {
+	#pragma STDC FENV_ACCESS ON                             /* 3116 */
+	       z = f32a * f32b;
+	   }
+	   if ( z > f32a )
+	   {
+	#pragma STDC FENV_ACCESS OFF                            /* 3116 */
+	       if ( fetestexcept( FE_OVERFLOW ) != 0)           /* 5136 */
+	       {
+	       }
+	   }
+	
+	   return 1;
+	}
