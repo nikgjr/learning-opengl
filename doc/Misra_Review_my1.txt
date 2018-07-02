@@ -79,6 +79,32 @@ Rule-10.5
 		    return 0;
 		}
 		
+		
+			Rationale
+	An explicit cast may be introduced for legitimate functional reasons, for example:
+	 To change the type in which a subsequent arithmetic operation is performed;
+	 To truncate a value deliberately;
+	 To make a type conversion explicit in the interests of clarity.
+	However, some explicit casts are considered inappropriate:
+	 In C99, the result of a cast or assignment to _Bool is always 0 or 1. This is not necessarily the case when casting to another type which is deÞ ned as essentially Boolean;
+	 A cast to an essentially enum type may result in a value that does not lie within the set of enumeration constants for that type;
+	 A cast from essentially Boolean to any other type is unlikely to be meaningful;
+	 Converting between floating and character types is not meaningful as there is no precise mapping between the two representations.
+	이론적 해석
+	다음과 같은 적법한 기능적 이유로 명시적인 주조가 도입될 수 있습니다.
+	 후속 산술 연산이 수행되는 유형을 변경한다.
+	 의도적으로 값을 줄인다.
+	 형식 변환을 명확성을 위해 명시적으로 한다.
+	
+	
+( bool_t ) false /* Compliant - C99 'false' is essentially Boolean */	
+( int32_t ) 3U /* Compliant */	
+( bool_t ) 0 /* Compliant - by exception */	
+( bool_t ) 3U /* Non-compliant */	
+( int32_t ) ena /* Compliant */	
+( enum enuma ) 3 /* Non-compliant */	
+( char ) enc /* Compliant */	
+
 -----------------------------------------------------------------------------
 * Note: an enumerated type may be cast to an enumerated type provided that the cast is to the same essential enumerated type. Such casts are redundant.
 Casting from void to any other type is not permitted as it results in undeÞ ned behaviour. This is covered by Rule 1.3.
