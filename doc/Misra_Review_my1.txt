@@ -1455,6 +1455,7 @@ pparr은 int8_t에 대한 포인터 배열에 대한 포인터에 대한 포인�
 -----------------------------------------------------------------------------
 Rule-19.2	
 	The union keyword should not be used.
+	union 키워드는 사용하지 말것. 
 	
 	Example Code:
 	
@@ -1479,13 +1480,13 @@ Rule-19.2
 	
 	uint32_t zext ( uint16_t s )
 	{
-	union
-	{
-	uint32_t ul;
-	uint16_t us;
-	} tmp;
-	tmp.us = s;
-	return tmp.ul; /* unspecified value */
+	   union
+	   {
+	      uint32_t ul;
+	      uint16_t us;
+	   } tmp;
+	   tmp.us = s;
+	   return tmp.ul; /* unspecified value */
 	}
 
 	
@@ -1497,14 +1498,30 @@ However, if a union member is written and then a different union member is read 
 The Standard permits the bytes of a union member to be accessed by means of another member whose type is array of unsigned char. 
 However, since it is possible to access bytes with unspecified values, unions should not be used.
 
+Union 멤버변수에 값을 기록하고 동일한 멤버변수로 다시 읽을 수 있습니다.
+그러나, 만약 union 멤버변수에 값을 쓰고, 다른 멤버변수로 읽는다면 멤버변수의 상대적 크기에 따라 값이 달라집니다.
+- 읽은 멤버변수크기가 작성된 멤버변수보다 클경우 값은 명시되지 않습니다.
+- 그렇지 않은경우, 값은 구현정의 입니다.
+표준에 따라 형식이 unsigned char 배열 인 다른 멤버를 통해 공용 멤버의 바이트에 액세스 할 수 있습니다.
+그러나 지정되지 않은 값으로 바이트에 액세스 할 수 있으므로 유니온을 사용하지 않아야합니다.
+
 If this rule is not followed, the kinds of behaviour that need to be determined are:
 - Padding : how much padding is inserted at the end of the union.
 - Alignment : how are members of any structures within the union aligned.
-- Endianness : is the most signiÞ cant byte of a word stored at the lowest or highest memory address.
+- Endianness : is the most significant byte of a word stored at the lowest or highest memory address.
 - Bit-order : how are bits numbered within bytes and how are bits allocated to bit fields.
+이 규칙을 따르지 않을 경우 확인해야 할 행동 유형은 다음과 같습니다.
+- Padding : 유니 코드 끝에 얼마나 많은 패딩이 삽입되는지.
+- 정렬 : 유니언 내의 모든 구조의 멤버가 어떻게 정렬됩니까?
+- 엔디 언 (Endianness) : 최하위 또는 최상위 메모리 주소에 저장된 워드의 최상위 바이트입니다.
+- 비트 순서 : 비트 내에서 비트가 매겨지는 방식과 비트가 비트 필드에 할당되는 방식.
+
+-패딩:유니언의 끝에 삽입되는 패딩의 양.
+-정렬:유니언 안에 있는 구조물의 부재들은 어떻게 정렬됩니까?
 
 Example
 In this non-compliant example, a 16-bit value is stored into a union but a 32-bit value is read back resulting in an unspecified value being returned.
+이 비준수 예제에서는 16 비트 값이 공용체에 저장되지만 32 비트 값이 다시 읽혀 지므로 지정되지 않은 값이 반환됩니다
 
 uint32_t zext ( uint16_t s )
 {
@@ -1522,7 +1539,7 @@ Rule 19.1
 
 -----------------------------------------------------------------------------
 Rule-20.1	
-	#include directives should only be preceded by preprocessor directives or comments
+	#include directives should only be preceded by preprocessor directives or comments.
 	
 	The rule shall be applied to the contents of a file before preprocessing occurs.
 	
