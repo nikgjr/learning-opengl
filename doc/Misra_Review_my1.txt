@@ -633,26 +633,38 @@ case BASE + 512u: /* Non-compliant - wraps to 0 */
 h ( );
 break;
 }
+
 The controlling expression of a #if or #elif preprocessor directive is required to be a constant expression.
+#if , #elif 전처리문의 조건식은 상수식이어야 함.
+
 #if 1u + ( 0u - 10u ) /* Non-compliant as ( 0u - 10u ) wraps */
-In this example, the expression DELAY + WIDTH has the value 70 000 but this will wrap-around to
-4 464 on a machine with a 16-bit int type.
+
+In this example, the expression DELAY + WIDTH has the value 70000 but this will wrap-around to 4464 on a machine with a 16-bit int type.
+이 예제에서 DELAY+WISpH표현식의 값은 70000이지만 16비트 삽입 유형의 시스템에서는 4464로 바뀝니다.
+
 #define DELAY 10000u
 #define WIDTH 60000u
 void fixed_pulse ( void )
 {
 uint16_t off_time16 = DELAY + WIDTH; /* Non-compliant */
 }
-This rule does not apply to the expression c + 1 in the following compliant example as it accesses an
-object and therefore does not satisfy the constraints for a constant expression:
+
+This rule does not apply to the expression c + 1 in the following compliant example as it accesses an object and therefore does not satisfy the constraints for a constant expression:
+이 규칙은 객체를 액세스하므로 상수 표현식에 대한 제약 조건을 충족시키지 않으므로 다음의 호환 예제에서 표현식 c + 1에 적용되지 않습니다.
+
 const uint16_t c = 0xffffu;
 void f ( void )
 {
 uint16_t y = c + 1u; /* Compliant */
 }
-In the following example, the sub-expression ( 0u - 1u ) leads to unsigned integer wrap-around. In
-the initialization of x, the sub-expression is not evaluated and the expression is therefore compliant.
+
+In the following example, the sub-expression ( 0u - 1u ) leads to unsigned integer wrap-around. 
+In the initialization of x, the sub-expression is not evaluated and the expression is therefore compliant.
 However, in the initialization of y, it may be evaluated and the expression is therefore non-compliant.
+다음 예에서 하위 표현식 (0u - 1u)은 부호없는 정수로 둘러 쌉니다.
+x의 초기화에서 하위 표현식은 평가되지 않으므로 표현식이 호환됩니다.
+그러나, y의 초기화에서, 그것은 평가 될 수 있고 표현은 비 호환적일 수있다.
+
 bool_t b;
 void g ( void )
 {
@@ -711,12 +723,14 @@ Rule-13.3
 	}				
 
 Rationale
-The use of increment and decrement operators in combination with other oper ators is not
-recommended because:
- It can signiÞ cantly impair the readability of the code;
- It introduces additional side e ects into a statement with the potential for undefined behaviour
+The use of increment and decrement operators in combination with otheroper ators is not recommended because:
+ - It can significantly impair the readability of the code;
+ - It introduces additional side effects into a statement with the potential for undefined behaviour.
 (covered by Rule 13.2).
 It is clearer to use these operations in isolation from any other operators.
+다른 연산자와 조합하여 증가 및 감소 연산자를 사용하는 것은 권장되지 않습니다. 그 이유는 다음과 같습니다.
+ - 코드의 가독성을 크게 손상시킬 수 있습니다.
+ - 정의되지 않은 동작이 발생할 가능성이있는 문에 추가 부작용을 도입합니다.
 Example
 The expression:
 u8a = u8b++
@@ -726,8 +740,7 @@ is clearer when written as the following sequence:
 ++u8b;
 u8a = u8b + u8c;
 u8c--;
-The following are all compliant because the only side e ect in each expression is caused by the
-increment or decrement operator.
+The following are all compliant because the only side e ect in each expression is caused by the increment or decrement operator.
 x++;
 a[ i ]++;
 b.x++;
@@ -736,13 +749,12 @@ c->x++;
 *p++;
 ( *p )++;
 
-The following are all non-compliant because they contain a function call as well as an increment or
-decrement operator:
+The following are all non-compliant because they contain a function call as well as an increment or decrement operator:
 if ( ( f ( ) + --u8a ) == 0u )
 {}
 g ( u8b++ );
-The following are all non-compliant even though the sub-expression containing the increment or
-decrement operator or some other side e ect is not evaluated:
+The following are all non-compliant even though the sub-expression containing the increment or decrement operator or some other side effect is not evaluated:
+증가 또는 감소 연산자 또는 다른 부작용이 포함 된 하위 표현식이 평가되지 않더라도 다음은 모두 비준수입니다.
 u8a = ( 1u == 1u ) ? 0u : u8b++;
 if ( u8a++ == ( ( 1u == 1u ) ? 0u : f ( ) ) )
 {}
@@ -789,17 +801,17 @@ Rule-13.4
 	}										
 
 Rationale
-The use of assignment operators, simple or compound, in combination with other arithmetic oper ators
-is not recommended because:
- It can significantly impair the readability of the code;
- It introduces additional side e ects into a statement making it more di cult to avoid the undefined behaviour covered by Rule 13.2.
+The use of assignment operators, simple or compound, in combination with other arithmetic operators is not recommended because:
+- It can significantly impair the readability of the code;
+- It introduces additional side effects into a statement making it more di cult to avoid the undefined behaviour covered by Rule 13.2.
+다음과 같은 이유로 다른 산술 연산자와 함께 할당 연산자 (단순 또는 복합 연산자)를 사용하지 않는 것이 좋습니다.
+- 코드의 가독성을 크게 손상시킬 수 있습니다.
+- 규칙 13.2에서 다루지 않은 정의되지 않은 동작을 피하기 위해 부작용을 추가 진술로 소개합니다.
 Example
 x = y; /* Compliant */
-a[ x ] = a[ x = y ]; /* Non-compliant - the value of x = y
-* is used */
+a[ x ] = a[ x = y ]; /* Non-compliant - the value of x = y is used */
 /*
-* Non-compliant - value of bool_var = false is used but
-* bool_var == false was probably intended
+* Non-compliant - value of bool_var = false is used but bool_var == false was probably intended.
 */
 if ( bool_var = false )
 {}
@@ -834,12 +846,13 @@ Rule-15.1
 	}
 
 	Rationale
-Unconstrained use of goto can lead to programs that are unstructured and extremely di cult to
-under stand.
-In some cases a total ban on goto requires the introduction of ß ags to ensure correct control ß ow,
-and it is possible that these ß ags may themselves be less transparent than the goto they replace.
-Therefore, if this rule is not followed, the restricted use of goto is allowed where that use follows the
-guidance in Rule 15.2 and Rule 15.3.
+Unconstrained use of goto can lead to programs that are unstructured and extremely difficult to understand.
+In some cases a total ban on goto requires the introduction of flags to ensure correct control flow, and it is possible that these flags may themselves be less transparent than the goto they replace.
+Therefore, if this rule is not followed, the restricted use of goto is allowed where that use follows the guidance in Rule 15.2 and Rule 15.3.
+제약없이 사용할 수있는 고토 (goto)를 사용하면 이해하기 어려운 구조의 프로그램으로 이어질 수 있습니다.
+경우에 따라 goto를 완전히 금지하려면 정확한 제어 흐름을 보장하는 플래그가 필요하며이 플래그 자체가 대체하는 goto보다 투명하지 않을 수도 있습니다.
+따라서이 규칙을 준수하지 않을 경우 goto의 제한 사용은 규칙 15.2 및 규칙 15.3의 지침을 따르는 경우 허용됩니다.
+따라서, 이 규칙을 따르지 않을 경우, 제152조 및 규칙 15.3항의 지침에 따라 구토를 제한적으로 사용할 수 있다.
 See also
 Rule 9.1, Rule 15.2, Rule 15.3, Rule 15.4
 -----------------------------------------------------------------------------
@@ -888,9 +901,7 @@ Rule-15.4
 							
 	   }						
 							
-	   /* Both of the following nested loops are compliant						
-	      as each has a single break used for early						
-	      loop termination. */						
+	   /* Both of the following nested loops are compliant as each has a single break used for early loop termination. */						
 							
 	   for ( m = 0; m < 10; ++m )						
 	   {						
@@ -908,9 +919,7 @@ Rule-15.4
 	      }						
 	   }						
 							
-	   /* The following loop is non-compliant as there are						
-	      multiple break and goto statements used for						
-	      early loop termination. */						
+	   /* The following loop is non-compliant as there are multiple break and goto statements used for early loop termination. */						
 							
 	   for ( m = 0; m < 10; ++m )						
 	   {						
@@ -929,13 +938,8 @@ Rule-15.4
 	   }						
 							
 							
-	   /* In the following example, the inner while loop						
-	      is compliant because there is a single goto						
-	      statement that can cause its early termination.						
-	      However, the outer while loop is non-compliant						
-	      because it can be terminated early either by the						
-	      break statement or by the goto statement in						
-	      the inner while loop. */						
+	   /* In the following example, the inner while loop is compliant because there is a single goto statement that can cause its early termination.
+	      However, the outer while loop is non-compliant because it can be terminated early either by the break statement or by the goto statement in the inner while loop. */
 							
 	   while (m != 0)						
 	   {						
@@ -961,63 +965,66 @@ Rule-15.4
 	}						
 
 Rationale
-Restricting the number of exits from a loop hel ps to minimize visual code complexity. The use of one
-break or goto statement allows a single secondary exit path to be created when early loop termination
-is required.
+Restricting the number of exits from a loop helps to minimize visual code complexity. 
+The use of one break or goto statement allows a single secondary exit path to be created when early loop termination is required.
+루프의 이탈 수를 제한하면 시각적 코드의 복잡성을 최소화 할 수 있습니다. 
+하나의 break 또는 goto 문을 사용하면 초기 루프 종료가 필요할 때 단일 보조 종료 경로를 작성할 수 있습니다.
 Example
-Both of the following nested loops are compliant as each has a single break used for early loop
-termination.
+Both of the following nested loops are compliant as each has a single break used for early loop termination.
+ 다음 중첩 루프는 모두 초기 루프 종료에 사용되는 단일 브레이크가 있으므로 준수합니다.
 for ( x = 0; x < LIMIT; ++x )
 {
-if ( ExitNow ( x ) )
-{
-break;
+    if ( ExitNow ( x ) )
+    {
+         break;
+    }
+    for ( y = 0; y < x; ++y )
+    {
+        if ( Exit Now ( LIMIT - y ) )
+        {
+            break;
+        }
+    }
 }
-for ( y = 0; y < x; ++y )
-{
-if ( Exit Now ( LIMIT - y ) )
-{
-break;
-}
-}
-}
-The following loop is non-compliant as there are multiple break and goto statements used for early
-loop termination.
+The following loop is non-compliant as there are multiple break and goto statements used for early loop termination.
+초기 루프 종료에 사용되는 break 및 goto 문이 여러 개 있기 때문에 다음 루프가 호환되지 않습니다
 for ( x = 0; x < LIMIT; ++x )
 {
-if ( BreakNow ( x ) )
-{
-break;
-}
-else if ( GotoNow ( x ) )
-{
-goto EXIT;
-}
-else
-{
-KeepGoing ( x );
-}
+     if ( BreakNow ( x ) )
+     {
+          break;          /* non-compliant */
+     }
+     else if ( GotoNow ( x ) )
+     {
+          goto EXIT;     /* non-compliant */
+     }
+     else
+     {
+          KeepGoing ( x );
+     }
 }
 EXIT:
+
 	
-In the following example, the inner while loop is compliant because there is a single goto statement
-that can cause its early termination. However, the outer while loop is non-compliant because it can be
-terminated early either by the break statement or by the goto statement in the inner while loop.
+In the following example, the inner while loop is compliant because there is a single goto statement that can cause its early termination. 
+However, the outer while loop is non-compliant because it can be terminated early either by the break statement or by the goto statement in the inner while loop.
+다음 예제에서 내부 while 루프는 일찍 종료 될 수있는 단일 goto 문이 있기 때문에 호환됩니다.
+그러나 outer while 루프는 break 문이나 inner while 루프의 goto 문에 의해 일찍 종료 될 수 있기 때문에 호환되지 않습니다.
 while ( x != 0u )
 {
-x = calc_new_x ( );
-if ( x == 1u )
-{
-break;
-}
-while ( y != 0u )
-{
-y = calc_new_y ( );
-if ( y == 1u )
-{
-goto L1;
-}
-}
+   x = calc_new_x ( );
+   if ( x == 1u )
+   {
+      break;
+   }
+   while ( y != 0u )
+   {
+      y = calc_new_y ( );
+      if ( y == 1u )
+      {
+         goto L1;
+      }
+   }
 }
 L1:
 z = x + y;
@@ -1054,27 +1061,28 @@ Rule-15.5
 	}											
 
 	Rationale
-A single point of exit is required by IEC 61508 and IS O 26262 as part of the requirements for a modular
-approach.
+A single point of exit is required by IEC61508 and ISO26262 as part of the requirements for a modular approach.
 Early returns may lead to the unintentional omission of function termination code.
-If a function has exit points interspersed with statements that produce persistent side e ects, it is not
-easy to determine which side e ects will occur when the function is executed.
-
+If a function has exit points interspersed with statements that produce persistent side effects, it is not easy to determine which side effects will occur when the function is executed.
+단일 접근 점은 모듈 방식의 요구 사항의 일부로서 IEC61508 및 ISO26262에서 요구됩니다.
+조기 리턴은 실수로 기능 종료 코드가 누락 될 수 있습니다.
+함수에 종료 부작용이 나타나는 명령문이 산재되어 있으면 함수가 실행될 때 발생할 부작용을 판별하기 쉽지 않습니다.
 Example
-In the following non-compliant code example, early returns are used to validate the function
-parameters.
+In the following non-compliant code example, early returns are used to validate the function parameters.
+다음의 비 호환 코드 예제에서 함수 매개 변수의 유효성을 검사하는 데 초기 리턴이 사용됩니다
 bool_t f ( uint16_t n, char *p )
 {
-if ( n > MAX )
-{
-return false;
+    if ( n > MAX )
+    {
+         return false;
+    }
+    if ( p == NULL )
+    {
+         return false;
+    }
+    return true;
 }
-if ( p == NULL )
-{
-return false;
-}
-return true;
-}
+
 See also
 R ule 17.4
 
