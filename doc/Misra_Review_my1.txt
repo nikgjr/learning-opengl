@@ -617,8 +617,8 @@ Example
 The expression associated with a case label is required to be a constant expression. 
 If an unsigned wraparound occurs during evaluation of a case expression, it is likely to be unintentional. 
 On a machine with a 16-bit int type, any value of BASE greater than or equal to 65024 would result in wrap-around in the following example:
-사례 레이블과 관련된 표현식은 상수 표현식이어야합니다.
-사례 표현을 평가하는 동안 부호없는 둘러 감기가 발생하면 의도하지 않은 것일 수 있습니다.
+case 레이블과 관련된 표현식은 상수 표현식이어야합니다.
+case 표현을 계산하는 동안 부호없는 둘러 감기가 발생하면 의도하지 않은 것일 수 있습니다.
 16 비트 int 유형이있는 시스템에서 BASE가 65024보다 크거나 같으면 다음 예에서 랩 어라운드가 발생합니다.
 #define BASE 65024u
 switch ( x )
@@ -896,7 +896,7 @@ Rule-15.4
 							
 	      if ( n > (s16a - 2) )						
 	      {						
-	         break;                                                 /* 0771 */						<-- for 루프 종료조건 n값이 s16a 이상인지, s16a-2 이상인지 구분불가
+	         break;                 /* 0771 */				<-- for 루프 종료조건 n값이 s16a 이상인지, s16a-2 이상인지 구분불가
 	      }						
 							
 	   }						
